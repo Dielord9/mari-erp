@@ -102,3 +102,26 @@ model CrmMessage {
 
   conversation   CrmConversation @relation(fields: [conversationId], references: [id])
 }
+
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String
+  contact     String?
+  address     String?
+  email       String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id          String   @id @default(cuid())
+  supplierId  String
+  status      String
+  totalCost   Float
+  items       Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  supplier    Supplier @relation(fields: [supplierId], references: [id])
+}
