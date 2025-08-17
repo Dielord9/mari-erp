@@ -1,5 +1,6 @@
 datasource db {
-  provider = "postgresql"
+
+provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -72,4 +73,32 @@ model Order {
   status       String
 
   customer    Customer @relation(fields: [customerId], references: [id])
+}
+
+
+model CrmConversation {
+  id          String   @id @default(cuid())
+  customerId  String
+  status      String
+  lastMsgAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  messages    CrmMessage[]
+}
+
+model CrmMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  direction      String
+  type           String
+  payload        Json
+  waMsgId        String?
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  conversation   CrmConversation @relation(fields: [conversationId], references: [id])
 }
