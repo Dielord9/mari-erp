@@ -1,0 +1,75 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  sku           String   @unique
+  title         String
+  purity        String
+  netWeightG    Float
+  grossWeightG  Float
+  makingFeeLkr  Int
+  wastageLkr    Int
+  status        String
+  branch        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  phone      String   @unique
+  whatsappId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  loyaltyAccount LoyaltyAccount?
+  orders         Order[]
+}
+
+model LoyaltyAccount {
+  id            String   @id @default(cuid())
+  customerId    String   @unique
+  tier          String   @default("silver")
+  pointsBalance Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  customer      Customer  @relation(fields: [customerId], references: [id])
+  ledger        LoyaltyPointsLedger[]
+}
+
+model LoyaltyPointsLedger {
+  id          String   @id @default(cuid())
+  accountId   String
+  txnType     String
+  pointsDelta Int
+  orderId     String?
+  remarks     String?
+  createdAt   DateTime @default(now())
+
+  account     LoyaltyAccount @relation(fields: [accountId], references: [id])
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  customerId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lineItems   Json
+  grossWeightG Float
+  netWeightG   Float
+  makingFeeLkr Int
+  wastageLkr   Int
+  totalLkr     Int
+  status       String
+
+  customer    Customer @relation(fields: [customerId], references: [id])
+}
