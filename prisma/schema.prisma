@@ -33,6 +33,8 @@ model Customer {
 
   loyaltyAccount LoyaltyAccount?
   orders         Order[]
+  conversations   CrmConversation[]
+
 }
 
 model LoyaltyAccount {
